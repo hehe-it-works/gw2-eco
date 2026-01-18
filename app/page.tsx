@@ -1,15 +1,9 @@
-
-import { prisma } from '../db/prisma';
-
 export const metadata = {
   title: "GW2-ECO",
   description: "Guild Wars 2 Economy Calculator",
 };
 
 export default async function Home() {
-  console.log('Starting up..');
-  const allItems = await prisma.items.findMany();
-  console.log('All Items', JSON.stringify(allItems, null, 2));
   return (
     <div className="landing-page">
       <div className="background-element">
