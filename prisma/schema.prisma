@@ -5,32 +5,46 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+model disciplines {
+  id                 Int                  @id
+  name               String?              @db.VarChar(100)
+  recipe_disciplines recipe_disciplines[]
 }
 
 model items {
-  item_id      Int            @id
-  item_name    String?        @db.VarChar(100)
+  id           Int            @id
+  name         String?        @db.VarChar(100)
   recipe_items recipe_items[]
   recipes      recipes[]
+}
+
+model recipe_disciplines {
+  recipe_id     Int
+  discipline_id Int
+  disciplines   disciplines @relation(fields: [discipline_id], references: [id], onDelete: Cascade, map: "recipe_disciplines_disciplines_id_fkey")
+  recipes       recipes     @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
+
+  @@id([recipe_id, discipline_id])
 }
 
 model recipe_items {
   item_id    Int
   recipe_id  Int
-  item_count Int?
-  items      items   @relation(fields: [item_id], references: [item_id], onDelete: NoAction, onUpdate: NoAction)
-  recipes    recipes @relation(fields: [recipe_id], references: [recipe_id], onDelete: NoAction, onUpdate: NoAction)
+  item_count Int
+  items      items   @relation(fields: [item_id], references: [id], onDelete: Cascade)
+  recipes    recipes @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
 
   @@id([item_id, recipe_id])
 }
 
 model recipes {
-  recipe_name       String?        @db.VarChar(100)
-  recipe_id         Int            @id
-  recipe_type       String?        @db.VarChar(40)
-  output_item_id    Int?
-  output_item_count Int?
-  recipe_items      recipe_items[]
-  items             items?         @relation(fields: [output_item_id], references: [item_id], onDelete: NoAction, onUpdate: NoAction)
+  id                 Int                  @id
+  output_item_id     Int?
+  output_item_count  Int
+  min_rating         Int?
+  recipe_disciplines recipe_disciplines[]
+  recipe_items       recipe_items[]
+  items              items?               @relation(fields: [output_item_id], references: [id], onDelete: Cascade)
 }
