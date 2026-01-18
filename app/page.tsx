@@ -1,21 +1,29 @@
 
+import { prisma } from '../db/prisma';
+
 export const metadata = {
   title: "GW2-ECO",
   description: "Guild Wars 2 Economy Calculator",
 };
 
-export default function Home() {
+export default async function Home() {
+  console.log('Starting up..');
+  const allItems = await prisma.items.findMany();
+  console.log('All Items', JSON.stringify(allItems, null, 2));
   return (
-
     <div className="landing-page">
-        <div className="background-element">
-          <div className="nav-background">
-            <button className="nav-button-home">GW2-Eco</button>
-            <button className="nav-button">List 1</button>
-            <button className="nav-button">List 2</button>
-          </div>
-          <div className="search-background">
-            <input type="text" placeholder="Search for material or item..." className="material-search-input" />
+      <div className="background-element">
+        <div className="nav-background">
+          <button className="nav-button-home">GW2-Eco</button>
+          <button className="nav-button">List 1</button>
+          <button className="nav-button">List 2</button>
+        </div>
+        <div className="search-background">
+          <input
+            type="text"
+            placeholder="Search for material or item..."
+            className="material-search-input"
+          />
         </div>
         <table className="profit-table">
           <thead>
