@@ -7,7 +7,6 @@ import {
   simple_item_data,
 } from "@/app/models";
 import { prisma } from "./prisma";
-import { json } from "node:stream/consumers";
 
 export async function createItem(_item: full_item_data) {
   await prisma.items.create({
