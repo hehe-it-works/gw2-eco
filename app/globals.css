@@ -24,8 +24,7 @@ h1 {
   font-size: 20px;
 }
 
-.nav-button {
-  background-color: transparent;
+.nav-button-your-list {
   color: var(--text1);
   border: 2px solid transparent;
   padding: 1rem 1.5rem;
@@ -35,7 +34,7 @@ h1 {
   font-size: 1rem;
 }
 
-.nav-button:hover {
+.nav-button-your-list:hover {
   color: var(--text1);
   border-left-color: var(--dark2);
   border-right-color: var(--dark2);
@@ -70,6 +69,7 @@ h1 {
 }
 .nav-background {
   position: fixed;
+  justify-content: space-between;
   top: 1rem;
   left: 1rem;
   width: calc(100% - 2rem);
