@@ -8,10 +8,12 @@ import {
 } from "@/app/models";
 import { prisma } from "./prisma";
 
-export async function createItem(_item: full_item_data) {
+export async function createItem(_item: simple_item_data) {
+  console.log("Creating item... ", _item);
   await prisma.items.create({
     data: _item,
   });
+  console.log("Created item", _item.id);
 }
 
 export async function getItem(_id: number): Promise<full_item_data> {
