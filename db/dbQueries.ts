@@ -94,19 +94,25 @@ export async function getFullItemData(_id: number): Promise<full_item_data> {
   return item;
 }
 
-export async function getSimpleItemData(
+export async function tryGetSimpleItemData(
   _id: number,
-): Promise<simple_item_data> {
-  const database_response = await prisma.items.findUniqueOrThrow({
-    where: {
-      id: _id,
-    },
-  });
-  const item: simple_item_data = {
-    id: database_response.id,
-    name: database_response.name,
-  };
-  return item;
+): Promise<simple_item_data | null> {
+  console.log("Looking for item with id", _id);
+  try {
+    const database_response = await prisma.items.findUniqueOrThrow({
+      where: {
+        id: _id,
+      },
+    });
+    const item: simple_item_data = {
+      id: database_response.id,
+      name: database_response.name,
+    };
+    return item;
+  } catch {
+    console.error("Failed to find item with id", _id);
+    return null;
+  }
 }
 
 export async function getItems(): Promise<simple_item_data[]> {

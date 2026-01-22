@@ -7,7 +7,7 @@ import {
 import {
   createItem,
   createRecipe,
-  getSimpleItemData,
+  tryGetSimpleItemData,
   getDisciplines,
   getItems,
   getAllDbItemIds,
@@ -30,8 +30,6 @@ export async function startBackgroundSercives() {
   console.log("Started background service!");
 }
 
-
-
 async function fetchItems(ids: number[]) {
   console.log(ids);
   const item_response = await fetch(
@@ -47,7 +45,45 @@ async function fetchItems(ids: number[]) {
   });
 }
 
+export async function startRecipeFetch() {
+  console.log("Starting recipe fetch...");
+  const recipe_id_respone = await fetch(
+    "https://api.guildwars2.com/v2/recipes",
+  );
+  recipe_ids = await recipe_id_respone.json();
+  const timer = setInterval(async () => {
+    await fetchRecipes(recipe_ids.splice(0, 50));
+    if (recipe_ids.length === 0) {
+      console.log("Finished recipe fetch!");
+      clearInterval(timer);
+    }
+  }, 250);
+}
 
+async function fetchRecipes(ids: number[]) {
+  const recipe_response = await fetch(
+    `https://api.guildwars2.com/v2/recipes?ids=${ids.join(",")}`,
+  );
+  const recipes: recipe_response[] = await recipe_response.json();
+  recipes.forEach(async (recipe) => {
+    console.log("Creating recipe...", recipe.id);
+    const _output_item = await tryGetSimpleItemData(recipe.output_item_id);
+    if (_output_item === null) {
+      console.warn("Failed to get output item", recipe.output_item_id);
+      return;
+    }
+    const _disciplines: discipline[] = await getDisciplines(recipe.disciplines);
+    await createRecipe({
+      id: recipe.id,
+      output_item: _output_item,
+      output_item_count: recipe.output_item_count,
+      disciplines: _disciplines,
+      min_rating: recipe.min_rating,
+      ingredients: recipe.ingredients,
+    });
+    console.log("Created recipe", recipe.id);
+  });
+}
 
 export async function compareItemIdsAndFetchMissing() {
   const db_item_ids = await getAllDbItemIds();

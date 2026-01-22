@@ -1,6 +1,6 @@
 'use server'
-import { startBackgroundSercives,  compareItemIdsAndFetchMissing} from "./backgroundServices";
+import { startBackgroundSercives,  compareItemIdsAndFetchMissing, startRecipeFetch} from "./backgroundServices";
 
 export async function startUp(){
-    compareItemIdsAndFetchMissing();
+    startRecipeFetch();
 }
