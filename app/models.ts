@@ -7,12 +7,12 @@ export type full_item_data = {
 
 export type discipline = {
   id: number;
-  name: string | null;
+  name: string;
 };
 
 export type recipe = {
   id: number;
-  output_item: simple_item_data | null;
+  output_item: simple_item_data;
   output_item_count: number;
   min_rating: number | null;
   disciplines: discipline[];

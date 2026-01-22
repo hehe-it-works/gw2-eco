@@ -9,7 +9,7 @@ datasource db {
 
 model disciplines {
   id                 Int                  @id
-  name               String?              @db.VarChar(100)
+  name               String               @db.VarChar(100)
   recipe_disciplines recipe_disciplines[]
 }
 
@@ -41,7 +41,7 @@ model recipe_items {
 
 model recipes {
   id                 Int                  @id
-  output_item_id     Int?
+  output_item_id     Int
   output_item_count  Int
   min_rating         Int?
   recipe_disciplines recipe_disciplines[]

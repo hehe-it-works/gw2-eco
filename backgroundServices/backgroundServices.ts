@@ -28,3 +28,7 @@ async function fetchItems(ids: number[]) {
     });
   });
 }
+
+//add function to see if all the items are in the database and if not add the missing ones
+//add function to fetch recipes and feed them into the database
+//add table for prices stuff (noo need for listings yet as far as we know)
