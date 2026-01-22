@@ -1,6 +1,6 @@
 'use server'
-import { startBackgroundSercives } from "./backgroundServices";
+import { startBackgroundSercives,  compareItemIdsAndFetchMissing} from "./backgroundServices";
 
 export async function startUp(){
-    startBackgroundSercives();
+    compareItemIdsAndFetchMissing();
 }

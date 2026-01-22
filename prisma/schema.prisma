@@ -46,5 +46,5 @@ model recipes {
   min_rating         Int?
   recipe_disciplines recipe_disciplines[]
   recipe_items       recipe_items[]
-  items              items?               @relation(fields: [output_item_id], references: [id], onDelete: Cascade)
+  items              items                @relation(fields: [output_item_id], references: [id], onDelete: Cascade)
 }

@@ -16,7 +16,7 @@ export async function createItem(_item: simple_item_data) {
   console.log("Created item", _item.id);
 }
 
-export async function getItem(_id: number): Promise<full_item_data> {
+export async function getFullItemData(_id: number): Promise<full_item_data> {
   const database_response = await prisma.items.findUniqueOrThrow({
     where: {
       id: _id,
@@ -94,13 +94,57 @@ export async function getItem(_id: number): Promise<full_item_data> {
   return item;
 }
 
+export async function getSimpleItemData(
+  _id: number,
+): Promise<simple_item_data> {
+  const database_response = await prisma.items.findUniqueOrThrow({
+    where: {
+      id: _id,
+    },
+  });
+  const item: simple_item_data = {
+    id: database_response.id,
+    name: database_response.name,
+  };
+  return item;
+}
+
 export async function getItems(): Promise<simple_item_data[]> {
   return await prisma.items.findMany();
 }
 
+export async function getDisciplines(_names: string[]): Promise<discipline[]> {
+  let disciplines: discipline[] = [];
+  _names.forEach(async (_name) => {
+    const name_response = await prisma.disciplines.findFirstOrThrow({
+      where: {
+        name: _name,
+      },
+    });
+    disciplines.push(name_response);
+  });
+  return disciplines;
+}
+
+export async function getAllDbItemIds(): Promise<number[]> {
+  const item_ids_response = await prisma.items.findMany({
+    select: {
+      id: true,
+    },
+  });
+  const item_id_array = item_ids_response.map((item) => item.id);
+  console.log(item_id_array);
+  return item_id_array;
+}
+
 export async function createRecipe(_recipe: recipe) {
   await prisma.recipes.create({
-    data: _recipe,
+    data: {
+      id: _recipe.id,
+      output_item_id: _recipe.output_item.id,
+      output_item_count: _recipe.output_item_count,
+      min_rating: _recipe.min_rating,
+    },
   });
 }
 

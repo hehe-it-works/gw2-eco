@@ -1,6 +1,5 @@
 import { startUp } from "@/backgroundServices/instrumentation";
-import { getItem } from "@/db/dbQueries";
-
+import { getAllDbItemIds, getFullItemData } from "@/db/dbQueries";
 
 export const metadata = {
   title: "GW2-STONKS",
@@ -8,12 +7,14 @@ export const metadata = {
 };
 
 export default async function Home() {
-  getItem(1);
+  getFullItemData(1);
   return (
     <div className="landing-page">
       <div className="background-element">
         <div className="nav-background">
-          <button className="nav-button-home" onClick={startUp}>GW2-STONKS</button>
+          <button className="nav-button-home" onClick={startUp}>
+            GW2-STONKS
+          </button>
           <button className="nav-button-your-list">Your List</button>
         </div>
         <div className="search-background">
