@@ -5,6 +5,8 @@ import {
   recipe,
   full_item_data,
   simple_item_data,
+  recipe_item,
+  recipe_discipline,
 } from "@/app/models";
 import { prisma } from "./prisma";
 
@@ -115,6 +117,24 @@ export async function tryGetSimpleItemData(
   }
 }
 
+/*export async function tryGetRecipe(_id: number): Promise<recipe | null> {
+  console.log("Looking for recipe with id", _id);
+  try{
+    const database_response = await prisma.recipes.findUniqueOrThrow({
+      where: {
+        id: _id,
+      }
+    });
+    const recipe: recipe = {
+      id: database_response.id,
+      output_item: database_response.id,
+      output_item_count: database_response.output_item_count,
+      min_rating: database_response.min_rating,
+      disciplines: 
+    }
+  }
+}*/
+
 export async function getItems(): Promise<simple_item_data[]> {
   return await prisma.items.findMany();
 }
@@ -143,6 +163,16 @@ export async function getAllDbItemIds(): Promise<number[]> {
   return item_id_array;
 }
 
+export async function getAllDbRecipeIds(): Promise<number[]> {
+  const recipe_ids_response = await prisma.recipes.findMany({
+    select: {
+      id: true,
+    },
+  });
+  const recipe_id_array = recipe_ids_response.map((recipe) => recipe.id);
+  return recipe_id_array;
+}
+
 export async function createRecipe(_recipe: recipe) {
   await prisma.recipes.create({
     data: {
@@ -150,6 +180,28 @@ export async function createRecipe(_recipe: recipe) {
       output_item_id: _recipe.output_item.id,
       output_item_count: _recipe.output_item_count,
       min_rating: _recipe.min_rating,
+    },
+  });
+}
+export async function createRecipeItem(_recipe_item: recipe_item) {
+  console.log("Creating recipe item...", _recipe_item);
+  await prisma.recipe_items.create({
+    data: {
+      recipe_id: _recipe_item.recipe_id,
+      item_id: _recipe_item.ingredient.item_id,
+      item_count: _recipe_item.ingredient.count,
+    },
+  });
+}
+
+export async function createRecipeDiscipline(
+  _recipe_discipline: recipe_discipline,
+) {
+  console.log("Creating recipe discipline...", _recipe_discipline);
+  await prisma.recipe_disciplines.create({
+    data: {
+      recipe_id: _recipe_discipline.recipe_id,
+      discipline_id: _recipe_discipline.discipline.id,
     },
   });
 }

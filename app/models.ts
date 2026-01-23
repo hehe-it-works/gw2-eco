@@ -28,6 +28,14 @@ export type simple_item_data = {
   id: number;
   name: string | null;
 };
+export type recipe_item = {
+  recipe_id: number;
+  ingredient: ingredient;
+};
+export type recipe_discipline = {
+  recipe_id: number;
+  discipline: discipline;
+};
 
 export type recipe_response = {
   id: number;

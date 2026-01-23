@@ -11,23 +11,31 @@ import {
   getDisciplines,
   getItems,
   getAllDbItemIds,
+  getAllDbRecipeIds,
+  createRecipeItem,
+  createRecipeDiscipline,
 } from "@/db/dbQueries";
 
 let item_ids: number[];
-let recipe_ids: number[];
+let missing_ids: number[];
 
 export async function startBackgroundSercives() {
-  console.log("Starting background service...");
+  fetchMissingRecipes();
+}
+
+export async function fetchMissingItems() {
+  const db_item_ids = await getAllDbItemIds();
   const item_id_response = await fetch("https://api.guildwars2.com/v2/items");
-  item_ids = await item_id_response.json();
-  const timer = setInterval(async () => {
-    console.log(item_ids);
-    await fetchItems(item_ids.splice(0, 50));
-    if (item_ids.length === 0) {
-      clearInterval(timer);
-    }
-  }, 250);
-  console.log("Started background service!");
+  const api_item_ids: number[] = await item_id_response.json();
+  const missing_ids = api_item_ids.filter((id) => !db_item_ids.includes(id));
+  if (missing_ids.length > 0) {
+    const timer = setInterval(async () => {
+      await fetchItems(missing_ids.splice(0, 50));
+      if (missing_ids.length === 0) {
+        clearInterval(timer);
+      }
+    }, 250);
+  }
 }
 
 async function fetchItems(ids: number[]) {
@@ -45,19 +53,25 @@ async function fetchItems(ids: number[]) {
   });
 }
 
-export async function startRecipeFetch() {
-  console.log("Starting recipe fetch...");
+export async function fetchMissingRecipes() {
+  console.log("Looking for missing recipes...");
+  const db_recipe_ids = await getAllDbRecipeIds();
   const recipe_id_respone = await fetch(
     "https://api.guildwars2.com/v2/recipes",
   );
-  recipe_ids = await recipe_id_respone.json();
-  const timer = setInterval(async () => {
-    await fetchRecipes(recipe_ids.splice(0, 50));
-    if (recipe_ids.length === 0) {
-      console.log("Finished recipe fetch!");
-      clearInterval(timer);
-    }
-  }, 250);
+  const api_recipe_ids: number[] = await recipe_id_respone.json();
+  const missing_ids = api_recipe_ids.filter(
+    (id) => !db_recipe_ids.includes(id),
+  );
+  if (missing_ids.length > 0) {
+    const timer = setInterval(async () => {
+      await fetchRecipes(missing_ids.splice(0, 50));
+      if (missing_ids.length === 0) {
+        console.log("Finished recipe fetch!");
+        clearInterval(timer);
+      }
+    }, 250);
+  }
 }
 
 async function fetchRecipes(ids: number[]) {
@@ -81,25 +95,21 @@ async function fetchRecipes(ids: number[]) {
       min_rating: recipe.min_rating,
       ingredients: recipe.ingredients,
     });
+    recipe.ingredients.forEach(async (ingredient) => {
+      await createRecipeItem({
+        recipe_id: recipe.id,
+        ingredient: ingredient,
+      });
+    });
+    _disciplines.forEach(async (discipline) => {
+      await createRecipeDiscipline({
+        recipe_id: recipe.id,
+        discipline: discipline,
+      });
+    });
     console.log("Created recipe", recipe.id);
   });
 }
 
-export async function compareItemIdsAndFetchMissing() {
-  const db_item_ids = await getAllDbItemIds();
-  const item_id_response = await fetch("https://api.guildwars2.com/v2/items");
-  const api_item_ids: number[] = await item_id_response.json();
-  const missing_ids = api_item_ids.filter((id) => !db_item_ids.includes(id));
-  if (missing_ids.length > 0) {
-    const timer = setInterval(async () => {
-      await fetchItems(missing_ids.splice(0, 50));
-      if (missing_ids.length === 0) {
-        clearInterval(timer);
-      }
-    }, 250);
-  }
-}
-
-//add function to fetch recipes and feed them into the database
 //add table for prices stuff (noo need for listings yet as far as we know)
 //add html/css object to add into the table
