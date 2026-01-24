@@ -32,6 +32,24 @@ export type recipe_item = {
   recipe_id: number;
   ingredient: ingredient;
 };
+
+export type price = {
+  item: simple_item_data;
+  whitelisted: boolean;
+  buys: buys;
+  sells: sells;
+};
+
+export type buys = {
+  quantity: number;
+  unit_price: number;
+};
+
+export type sells = {
+  quantity: number;
+  unit_price: number;
+};
+
 export type recipe_discipline = {
   recipe_id: number;
   discipline: discipline;

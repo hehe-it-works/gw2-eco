@@ -7,6 +7,7 @@ import {
   simple_item_data,
   recipe_item,
   recipe_discipline,
+  price,
 } from "@/app/models";
 import { prisma } from "./prisma";
 
@@ -209,5 +210,37 @@ export async function createRecipeDiscipline(
 export async function createDiscipline(_discipline: discipline) {
   await prisma.disciplines.create({
     data: _discipline,
+  });
+}
+
+export async function createPrice(_price: price) {
+  await prisma.prices.create({
+    data: {
+      item_id: _price.item.id,
+      whitelisted: _price.whitelisted,
+      buys_quantity: _price.buys.quantity,
+      buys_unit_price: _price.buys.unit_price,
+      sells_quantity: _price.sells.quantity,
+      sells_unit_price: _price.sells.unit_price,
+    },
+  });
+}
+
+export async function getAllPricesItemIds(): Promise<number[]> {
+  const prices_response = await prisma.prices.findMany({
+    select: {
+      item_id: true,
+    },
+  });
+  const item_id_array = prices_response.map((price) => price.item_id);
+  return item_id_array;
+}
+
+export async function updatePrice(_item_id: number, _price: price) {
+  await prisma.prices.update({
+    where: {
+      item_id: _item_id,
+    },
+    data: _price,
   });
 }

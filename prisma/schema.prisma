@@ -16,6 +16,7 @@ model disciplines {
 model items {
   id           Int            @id
   name         String?        @db.VarChar(100)
+  prices       prices?
   recipe_items recipe_items[]
   recipes      recipes[]
 }
@@ -47,4 +48,14 @@ model recipes {
   recipe_disciplines recipe_disciplines[]
   recipe_items       recipe_items[]
   items              items                @relation(fields: [output_item_id], references: [id], onDelete: Cascade)
+}
+
+model prices {
+  item_id          Int      @id
+  whitelisted      Boolean?
+  buys_quantity    Int?
+  buys_unit_price  Int?
+  sells_quantity   Int?
+  sells_unit_price Int?
+  items            items    @relation(fields: [item_id], references: [id], onDelete: Cascade)
 }
