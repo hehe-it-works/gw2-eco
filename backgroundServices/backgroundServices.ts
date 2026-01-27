@@ -2,6 +2,7 @@ import {
   discipline,
   full_item_data,
   price,
+  price_response,
   recipe_response,
   simple_item_data,
 } from "@/app/models";
@@ -16,7 +17,7 @@ import {
   createRecipeItem,
   createRecipeDiscipline,
   getAllPricesItemIds,
-  createPrice,
+  tryCreatePrice,
   updatePrice,
 } from "@/db/dbQueries";
 
@@ -24,7 +25,9 @@ let item_ids: number[];
 let missing_ids: number[];
 
 export async function startBackgroundSercives() {
-  fetchMissingRecipes();
+  // await fetchMissingItems();
+  //  await fetchMissingRecipes();
+  await fetchMissingPrices();
 }
 
 export async function fetchMissingItems() {
@@ -116,55 +119,62 @@ async function fetchRecipes(ids: number[]) {
   });
 }
 
-async function updatePrices() {
+async function fetchMissingPrices() {
   console.log("Find missing recipes...");
   const db_prices_item_ids = await getAllPricesItemIds();
   const prices_response = await fetch(
     "https://api.guildwars2.com/v2/commerce/prices",
   );
   const api_prices_item_ids: number[] = await prices_response.json();
-  const missing_ids = api_prices_item_ids.filter(
-    (id) => !db_prices_item_ids.includes(id),
-  );
-  if (missing_ids.length > 0) {
+  if (api_prices_item_ids.length > 0) {
     const timer = setInterval(async () => {
-      await fetchPrices(missing_ids.splice(0, 50));
-      if (missing_ids.length === 0) {
-        console.log("Finished price fetch!");
+      console.log("Fetching...");
+      await fetchPrices(api_prices_item_ids.splice(0, 50), db_prices_item_ids);
+      if (api_prices_item_ids.length === 0) {
         clearInterval(timer);
       }
     }, 250);
   }
-  console.log("Updating prices...");
-  const timer = setInterval(async () => {
-    db_prices_item_ids.splice(0, 50).forEach(async (item_id) => {
-      await updatePrice(item_id, await fetchPriceById(item_id));
-    });
-    if (db_prices_item_ids.length === 0) {
-      console.log("Finished price fetch!");
-      clearInterval(timer);
-    }
-  }, 250);
 }
 
-async function fetchPrices(_ids: number[]) {
+// async function updatePrices() {
+//   console.log("Updating prices...");
+//   const timer = setInterval(async () => {
+//     db_prices_item_ids.splice(0, 50).forEach(async (item_id) => {
+//       await updatePrice(item_id, await fetchPriceById(item_id));
+//     });
+//     if (db_prices_item_ids.length === 0) {
+//       console.log("Finished price fetch!");
+//       clearInterval(timer);
+//     }
+//   }, 250);
+// }
+
+async function fetchPrices(_ids: number[], _existing_ids: number[]) {
   const prices_response = await fetch(
-    `https://api.guildwars2.com/v2/recipes?ids=${_ids.join(",")}`,
+    `https://api.guildwars2.com/v2/commerce/prices?ids=${_ids.join(",")}`,
   );
-  const prices: price[] = await prices_response.json();
+  const prices: price_response[] = await prices_response.json();
   prices.forEach(async (price) => {
-    console.log("Creating price...", price);
-    await createPrice(price);
+    if (_existing_ids.includes(price.id)) {
+      await updatePrice(price);
+    } else {
+      await tryCreatePrice(price);
+    }
   });
 }
 
 async function fetchPriceById(_id: number): Promise<price> {
   const price_response = await fetch(
-    `https://api.guildwars2.com/v2/recipes/${_id}`,
+    `https://api.guildwars2.com/v2/commerce/prices/${_id}`,
   );
   const price: price = await price_response.json();
   return price;
 }
 
 //add table for prices stuff (noo need for listings yet as far as we know)
+//add view for all information we need for the view table outputitem |
+
 //add html/css object to add into the table
+
+//is it cheaper to craft it

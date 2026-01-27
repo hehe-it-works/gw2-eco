@@ -15,7 +15,8 @@ export default async function Home() {
           <button className="nav-button-home" onClick={startUp}>
             GW2-STONKS
           </button>
-          <button className="nav-button-your-list">Your List</button>
+          <button className="nav-button-your-list">Recipes</button>
+          <button className="nav-button-your-list">Materials</button>
         </div>
         <div className="search-background">
           <input

@@ -8,6 +8,7 @@ import {
   recipe_item,
   recipe_discipline,
   price,
+  price_response,
 } from "@/app/models";
 import { prisma } from "./prisma";
 
@@ -213,17 +214,25 @@ export async function createDiscipline(_discipline: discipline) {
   });
 }
 
-export async function createPrice(_price: price) {
-  await prisma.prices.create({
-    data: {
-      item_id: _price.item.id,
-      whitelisted: _price.whitelisted,
-      buys_quantity: _price.buys.quantity,
-      buys_unit_price: _price.buys.unit_price,
-      sells_quantity: _price.sells.quantity,
-      sells_unit_price: _price.sells.unit_price,
-    },
-  });
+export async function tryCreatePrice(_price: price_response) {
+  console.log("Creating price...", _price);
+
+  try {
+    await prisma.prices.create({
+      data: {
+        item_id: _price.id,
+        whitelisted: _price.whitelisted,
+        buys_quantity: _price.buys.quantity,
+        buys_unit_price: _price.buys.unit_price,
+        sells_quantity: _price.sells.quantity,
+        sells_unit_price: _price.sells.unit_price,
+      },
+    });
+  } catch {
+    console.warn("Couldnt update price of:", _price.id);
+  }
+
+  //console.log("Created price!", _price.item.id);
 }
 
 export async function getAllPricesItemIds(): Promise<number[]> {
@@ -236,11 +245,18 @@ export async function getAllPricesItemIds(): Promise<number[]> {
   return item_id_array;
 }
 
-export async function updatePrice(_item_id: number, _price: price) {
+export async function updatePrice(_price: price_response) {
+  console.log("Updating price...", _price);
   await prisma.prices.update({
     where: {
-      item_id: _item_id,
+      item_id: _price.id,
     },
-    data: _price,
+    data: {
+      whitelisted: _price.whitelisted,
+      buys_quantity: _price.buys.quantity,
+      buys_unit_price: _price.buys.unit_price,
+      sells_quantity: _price.sells.quantity,
+      sells_unit_price: _price.sells.unit_price,
+    },
   });
 }

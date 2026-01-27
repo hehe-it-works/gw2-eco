@@ -63,3 +63,10 @@ export type recipe_response = {
   min_rating: number;
   ingredients: ingredient[];
 };
+
+export type price_response = {
+  id: number;
+  whitelisted: boolean;
+  buys: buys;
+  sells: sells;
+};
