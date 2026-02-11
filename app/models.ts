@@ -1,6 +1,7 @@
 export type full_item_data = {
   id: number;
   name: string | null;
+  //add price data
   output_of_recipes: recipe[];
   input_of_recipes: recipe[];
 };
@@ -19,18 +20,25 @@ export type recipe = {
   ingredients: ingredient[];
 };
 
-export type ingredient = {
-  item_id: number;
-  count: number;
+export type recipe_tree = {
+  recipe: recipe_response;
+  ingredient_trees: ingredient_tree[];
 };
 
-export type simple_item_data = {
-  id: number;
-  name: string | null;
-};
-export type recipe_item = {
-  recipe_id: number;
+export type ingredient_tree = {
   ingredient: ingredient;
+  recipe_trees: recipe_tree[];
+};
+
+export type item_data = {
+  id: number;
+  name: string;
+  price: price_data;
+};
+
+export type price_data = {
+  buys: buys;
+  sells: sells;
 };
 
 export type price = {
@@ -50,6 +58,20 @@ export type sells = {
   unit_price: number;
 };
 
+export type ingredient = {
+  item_id: number;
+  item_count: number;
+};
+
+export type simple_item_data = {
+  id: number;
+  name: string | null;
+};
+export type recipe_item = {
+  recipe_id: number;
+  ingredient: ingredient;
+};
+
 export type recipe_discipline = {
   recipe_id: number;
   discipline: discipline;
@@ -59,10 +81,10 @@ export type recipe_response = {
   id: number;
   output_item_id: number;
   output_item_count: number;
-  disciplines: string[];
-  min_rating: number;
-  ingredients: ingredient[];
+  min_rating: number | null;
 };
+
+export type recipe_items_response = {};
 
 export type price_response = {
   id: number;

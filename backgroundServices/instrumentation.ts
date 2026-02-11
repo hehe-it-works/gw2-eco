@@ -1,4 +1,5 @@
 "use server";
+import { getRecipeTree } from "@/db/dbQueries";
 import {
   startBackgroundSercives,
   fetchMissingItems,
@@ -6,5 +7,6 @@ import {
 } from "./backgroundServices";
 
 export async function startUp() {
-  startBackgroundSercives();
+  getRecipeTree(987);
+  //startBackgroundSercives();
 }
